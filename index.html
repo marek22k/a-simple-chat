@@ -38,6 +38,9 @@
                 outline: 2px solid black;
                 padding: 5px;
             }
+            .note {
+                max-width: 500px;
+            }
         </style>
     </head>
     <body>
@@ -61,6 +64,16 @@
         
         <p><button onclick="updateNumPeers()">Update</button> Peers: <span id="numPeers"></span></p>
         <button onclick="testConnection()">Test connection to UiServer</button>
+        <br><br>
+        
+        <div class="note">
+            Note: This zite requires the PeerMessage plugin in order to be able
+            to send and receive chat messages. If you get the error message
+            "Unknown command: peerBroadcast" it may mean that you have not
+            installed the PeerMessage plugin.
+            You can download it from <a href="/1CeEXxqemr5CcVQAAmrW13QYwZV4kAkQz6" target="_blank">here</a>.
+        </div>
+        
         
         <script src="js/ZeroFrame.js"></script>
         <script>
@@ -76,7 +89,8 @@
                 zeroFrame.cmd("siteInfo", [], (res) => {
                      document.getElementById("numPeers").innerHTML = res.peers;
                      if (res.tasks !== 0) {
-                        zeroFrame.cmd("wrapperNotification", ["info", "Zite is still downloading. This could affect the functionality.", popupIntervall]);
+                        zeroFrame.cmd("wrapperNotification",
+                            ["info", "Zite is still downloading. This could affect the functionality.", popupIntervall]);
                      }
                  });
             }
@@ -90,16 +104,19 @@
             function updateNumPeers() {
                 zeroFrame.cmd("siteInfo", [], (res) => {
                     document.getElementById("numPeers").innerHTML = res.peers;
-                    zeroFrame.cmd("wrapperNotification", ["done", "Number of peers updated.", popupIntervall]);
+                    zeroFrame.cmd("wrapperNotification",
+                        ["done", "Number of peers updated.", popupIntervall]);
                 });
             }
 
             function testConnection() {
                 zeroFrame.cmd("ping", [], (pong) => {
                     if (pong === "pong") {
-                        zeroFrame.cmd("wrapperNotification", ["done", "Connection to UiServer websocket successful.", popupIntervall]);
+                        zeroFrame.cmd("wrapperNotification",
+                            ["done", "Connection to UiServer websocket successful.", popupIntervall]);
                     } else {
-                        zeroFrame.cmd("wrapperNotification", ["error", "Connection to UiServer websocket failed."]);
+                        zeroFrame.cmd("wrapperNotification",
+                            ["error", "Connection to UiServer websocket failed."]);
                     }
                 });
             }
@@ -107,7 +124,8 @@
             function requireLogin(func) {
                 zeroFrame.cmd("siteInfo", [], (res) => {
                     if (res.cert_user_id === null) {
-                        zeroFrame.cmd("wrapperNotification", ["error", "In order to use this function, an identity must be selected."]);
+                        zeroFrame.cmd("wrapperNotification",
+                            ["error", "In order to use this function, an identity must be selected."]);
                     } else {
                         func();
                     }
@@ -120,7 +138,8 @@
                         zeroFrame.cmd("siteInfo", [], (res) => {
                             if (res.cert_user_id !== null) {
                                 /* Show message when selecting an identity successfully. */
-                                zeroFrame.cmd("wrapperNotification", ["done", "Identity successfully selected.", popupIntervall]);
+                                zeroFrame.cmd("wrapperNotification",
+                                    ["done", "Identity successfully selected.", popupIntervall]);
                             }
                         });
                     }
@@ -133,7 +152,8 @@
                     zeroFrame.cmd("peerBroadcast", [input.value, false], (res) => {
                         if (res.sent) {
                             if (document.getElementById("notifyWhenSend").checked) {
-                                zeroFrame.cmd('wrapperNotification', ['done', 'Sent message!', popupIntervall]);
+                                zeroFrame.cmd('wrapperNotification',
+                                    ['done', 'Sent message!', popupIntervall]);
                             }
                             input.value = "";
                         } else {
@@ -171,14 +191,18 @@
                         /* ban message when empty */
                         zeroFrame.cmd("peerInvalid", [message.params.hash]);
                     } else {
-                        document.getElementById("history").innerHTML += '<li><span class="nick">' + htmlEncode(nick) + '</span>: <span class="msg">' + htmlEncode(text) + '</span></li>' + "\n";
+                        document.getElementById("history").innerHTML +=
+                                '<li><span class="nick">' + htmlEncode(nick) +'</span>:' +
+                                '<span class="msg">' + htmlEncode(text) + '</span></li>' +
+                                "\n";
 
                         /* autoscroll */
                         var chat = document.getElementById("chat");
                         chat.scrollTop = chat.scrollHeight;
 
                         if (document.getElementById("notifyWhenReceive").checked) {
-                            zeroFrame.cmd('wrapperNotification', ['done', 'Message received!', popupIntervall]);
+                            zeroFrame.cmd('wrapperNotification',
+                                ['done', 'Message received!', popupIntervall]);
                         }
                     
                         /* broadcast message to other peers */
