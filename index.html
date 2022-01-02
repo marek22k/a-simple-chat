@@ -5,6 +5,9 @@
         
         <title>A simple chat</title>
         
+        <base href="" target="_top" id="base">
+        <script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+        
         <style>
             * {
                 color: white;
