@@ -1,0 +1,31 @@
+{
+ "address": "1Keke3V7Fn8bPt82QyhNHkv5gx5NnK9Umu",
+ "address_index": 12207059,
+ "background-color": "#660033",
+ "cloneable": true,
+ "description": "A simple chat",
+ "files": {
+  "index.html": {
+   "sha512": "d44bc3cc87d9f994d469a27d80be8ae417dbebe3abaaba769c0b349ccd91cd0c",
+   "size": 3082
+  },
+  "js/ZeroFrame.js": {
+   "sha512": "76a24d167e8a4c45f7d1b315efe31e4b4ccb19efef011c080994c94045ff4c93",
+   "size": 5088
+  },
+  "p2p.json": {
+   "sha512": "dd3ffacadc54cb9dc2e6bf314fe1db86d815e4cfd9fd0675b429f2e64e05fec6",
+   "size": 242
+  }
+ },
+ "ignore": "",
+ "inner_path": "content.json",
+ "modified": 1641146504,
+ "postmessage_nonce_security": true,
+ "signers_sign": "G9JBrJv0VTftRt7xwEIXxCeTFX+bAnh1doaC8bC/Cv4nQZa9bvvEcEj4RCvkKL8bchdkgJjifb569KDtCzoJiU4=",
+ "signs": {"1Keke3V7Fn8bPt82QyhNHkv5gx5NnK9Umu": "HKEpQNOxHCk2vcxTzaccQSsjGURs6/dX2rHV/HHd/sq/ex0nMrSEx8/bYSOiOWXFDUvSSGZsF6SciLHe4jg9skw="},
+ "signs_required": 1,
+ "title": "A simple chat",
+ "viewport": "width=device-width, initial-scale=1.0",
+ "zeronet_version": "0.7.2"
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        
+        <title>A simple chat</title>
+        
+        <style>
+            .nick {
+                font-weight: bold;
+            }
+            #history {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                color: #ccffcc;
+            }
+            #chat {
+                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: scroll;
+                height: 400px;
+            }
+            #msg_in {
+                background-color: #4d0026;
+                border: 2px solid black;
+                color: white;
+            }
+            #msg_in[input="text"] {
+                outline: 2px solid white;
+                font-size: 1.1em;
+            }
+            button {
+                background-color: #330011;
+                border: 1px solid white;
+                outline: 2px solid black;
+                color: white;
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="chat">
+            <ul id="history">
+            </ul>
+        </div>
+        <button onclick="login()">Login</button>
+        <input type="text" id="msg_in" value="">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="clearMessages()">Clear</button>
+        
+        <script src="js/ZeroFrame.js"></script>
+        <script>
+            zeroFrame = new ZeroFrame();
+
+            var identity_provider = ["zeroid.bit", "cryptoid.bit", "kaffie.bit"];
+
+            function login() {
+                zeroFrame.cmd("certSelect", [identity_provider]);
+            }
+
+            function sendMessage() {
+                var text = document.getElementById("msg_in");
+                zeroFrame.cmd("peerBroadcast", [text.value, false]);
+                text.value = "";
+            }
+            
+            function clearMessages() {
+                document.getElementById("history").innerHTML = "";
+            }
+
+            zeroFrame.onRequest = function(cmd, message) {
+                if (cmd == "peerReceive") {
+                    /* receive message */
+                    var text = message.params.message;
+                    var nick = message.params.cert;
+                    
+                    if (text == "") {
+                        /* ban message when empty */
+                        zeroFrame.cmd("peerInvalid", [message.params.hash]);
+                    } else {
+                        document.getElementById("history").innerHTML += '<li><span class="nick">' + nick + '</span>: <span class="msg">' + text + '</span></li>' + "\n";
+
+                        /* autoscroll */
+                        var chat = document.getElementById("chat");
+                        chat.scrollTop = chat.scrollHeight;
+
+                        /* broadcast message to other peers */
+                        zeroFrame.cmd("peerValid", [message.params.hash]);
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

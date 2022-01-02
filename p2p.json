@@ -1,0 +1,8 @@
+{
+    "filter": ".*",
+    "cert_signers": {
+        "zeroid.bit":   ["1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz"],
+        "cryptoid.bit": ["18143WPue3rQykNaopx5KJKzYmaYhCjqhv"],
+        "kaffie.bit":   ["1KH5BdNnqxh2KRWMMT8wUXzUgz4vVQ4S8p"]
+    }
+}
