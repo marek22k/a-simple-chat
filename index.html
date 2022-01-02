@@ -6,6 +6,9 @@
         <title>A simple chat</title>
         
         <style>
+            * {
+                color: white;
+            }
             .nick {
                 font-weight: bold;
             }
@@ -21,12 +24,11 @@
                 overflow-y: scroll;
                 height: 400px;
             }
-            #msgInput {
+            input {
                 background-color: #4d0026;
                 border: 2px solid black;
-                color: white;
             }
-            #msgInput[input="text"] {
+            input[input="text"] {
                 outline: 2px solid white;
                 font-size: 1.1em;
             }
@@ -34,7 +36,6 @@
                 background-color: #330011;
                 border: 1px solid white;
                 outline: 2px solid black;
-                color: white;
                 padding: 5px;
             }
         </style>
@@ -46,7 +47,7 @@
         </div>
         <button onclick="login()">Login</button>
         <input type="text" id="msgInput" value="" autocomplete="off">
-        <button onclick="sendMessage()" id="sendButton">Send</button>
+        <button onclick="requireLogin(sendMessage)" id="sendButton">Send</button>
         <button onclick="clearMessages()">Clear</button>
         <br><br>
         
@@ -58,6 +59,7 @@
         <label for="notifyWhenReceive">Notification when message is received</label>
         <br><br>
         
+        <p><button onclick="updateNumPeers()">Update</button> Peers: <span id="numPeers"></span></p>
         <button onclick="testConnection()">Test connection to UiServer</button>
         
         <script src="js/ZeroFrame.js"></script>
@@ -66,21 +68,61 @@
 
             var identity_provider = ["zeroid.bit", "cryptoid.bit", "kaffie.bit"];
             var input = document.getElementById("msgInput");
+            var popupIntervall = 3000;
+
+            initPage();
+
+            function initPage() {
+                zeroFrame.cmd("siteInfo", [], (res) => {
+                     document.getElementById("numPeers").innerHTML = res.peers;
+                     if (res.tasks !== 0) {
+                        zeroFrame.cmd("wrapperNotification", ["info", "Zite is still downloading. This could affect the functionality.", popupIntervall]);
+                     }
+                 });
+            }
+
+            function htmlEncode(str) {
+                return String(str).replace(/[^\w. ]/gi, (c) => {
+                    return '&#' + c.charCodeAt(0) + ';';
+                });
+            }
+
+            function updateNumPeers() {
+                zeroFrame.cmd("siteInfo", [], (res) => {
+                    document.getElementById("numPeers").innerHTML = res.peers;
+                    zeroFrame.cmd("wrapperNotification", ["done", "Number of peers updated.", popupIntervall]);
+                });
+            }
 
             function testConnection() {
                 zeroFrame.cmd("ping", [], (pong) => {
                     if (pong === "pong") {
-                        zeroFrame.cmd("wrapperNotification", ["done", "Connection to UiServer websocket successful", 3000]);
+                        zeroFrame.cmd("wrapperNotification", ["done", "Connection to UiServer websocket successful.", popupIntervall]);
                     } else {
-                        zeroFrame.cmd("wrapperNotification", ["error", "Connection to UiServer websocket failed"]);
+                        zeroFrame.cmd("wrapperNotification", ["error", "Connection to UiServer websocket failed."]);
+                    }
+                });
+            }
+
+            function requireLogin(func) {
+                zeroFrame.cmd("siteInfo", [], (res) => {
+                    if (res.cert_user_id === null) {
+                        zeroFrame.cmd("wrapperNotification", ["error", "In order to use this function, an identity must be selected."]);
+                    } else {
+                        func();
                     }
                 });
             }
 
             function login() {
                 zeroFrame.cmd("certSelect", [identity_provider], (res) => {
-                    if (res == "ok") {
-                        zeroFrame.cmd("wrapperNotification", ["done", "Identity successfully selected", 3000]);
+                    if (res === "ok") {
+                        zeroFrame.cmd("siteInfo", [], (res) => {
+                            if (res.cert_user_id !== null) {
+                                /* Show message when selecting an identity successfully. */
+                                zeroFrame.cmd("wrapperNotification", ["done", "Identity successfully selected.", popupIntervall]);
+                            }
+                        });
                     }
                 });
             }
@@ -91,11 +133,16 @@
                     zeroFrame.cmd("peerBroadcast", [input.value, false], (res) => {
                         if (res.sent) {
                             if (document.getElementById("notifyWhenSend").checked) {
-                                zeroFrame.cmd('wrapperNotification', ['done', 'Sent message!', 3000]);
+                                zeroFrame.cmd('wrapperNotification', ['done', 'Sent message!', popupIntervall]);
                             }
                             input.value = "";
                         } else {
-                            zeroFrame.cmd("wrapperNotification", ["error", "Message not sent!"]);
+                            var errorMsg = "Message not sent";
+                            if (res.error) {
+                                errorMsg += " - " + res.error;
+                            }
+                            errorMsg += "!";
+                            zeroFrame.cmd("wrapperNotification", ["error", errorMsg]);
                         }
                         input.readOnly = false;
                     });
@@ -124,14 +171,14 @@
                         /* ban message when empty */
                         zeroFrame.cmd("peerInvalid", [message.params.hash]);
                     } else {
-                        document.getElementById("history").innerHTML += '<li><span class="nick">' + nick + '</span>: <span class="msg">' + text + '</span></li>' + "\n";
+                        document.getElementById("history").innerHTML += '<li><span class="nick">' + htmlEncode(nick) + '</span>: <span class="msg">' + htmlEncode(text) + '</span></li>' + "\n";
 
                         /* autoscroll */
                         var chat = document.getElementById("chat");
                         chat.scrollTop = chat.scrollHeight;
 
                         if (document.getElementById("notifyWhenReceive").checked) {
-                            zeroFrame.cmd('wrapperNotification', ['info', 'Message received!', 3000]);
+                            zeroFrame.cmd('wrapperNotification', ['done', 'Message received!', popupIntervall]);
                         }
                     
                         /* broadcast message to other peers */
