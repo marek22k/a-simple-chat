@@ -61,8 +61,10 @@
 
             function sendMessage() {
                 var text = document.getElementById("msg_in");
-                zeroFrame.cmd("peerBroadcast", [text.value, false]);
-                text.value = "";
+                if (text != "") {
+                    zeroFrame.cmd("peerBroadcast", [text.value, false]);
+                    text.value = "";
+                }
             }
             
             function clearMessages() {
