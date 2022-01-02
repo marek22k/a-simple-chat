@@ -48,6 +48,17 @@
         <input type="text" id="msgInput" value="" autocomplete="off">
         <button onclick="sendMessage()" id="sendButton">Send</button>
         <button onclick="clearMessages()">Clear</button>
+        <br><br>
+        
+        <input type="checkbox" id="notifyWhenSend" checked>
+        <label for="notifyWhenSend">Notification when message is sent</label>
+        <br>
+        
+        <input type="checkbox" id="notifyWhenReceive">
+        <label for="notifyWhenReceive">Notification when message is received</label>
+        <br><br>
+        
+        <button onclick="testConnection()">Test connection to UiServer</button>
         
         <script src="js/ZeroFrame.js"></script>
         <script>
@@ -56,14 +67,38 @@
             var identity_provider = ["zeroid.bit", "cryptoid.bit", "kaffie.bit"];
             var input = document.getElementById("msgInput");
 
+            function testConnection() {
+                zeroFrame.cmd("ping", [], (pong) => {
+                    if (pong === "pong") {
+                        zeroFrame.cmd("wrapperNotification", ["done", "Connection to UiServer websocket successful", 3000]);
+                    } else {
+                        zeroFrame.cmd("wrapperNotification", ["error", "Connection to UiServer websocket failed"]);
+                    }
+                });
+            }
+
             function login() {
-                zeroFrame.cmd("certSelect", [identity_provider]);
+                zeroFrame.cmd("certSelect", [identity_provider], (res) => {
+                    if (res == "ok") {
+                        zeroFrame.cmd("wrapperNotification", ["done", "Identity successfully selected", 3000]);
+                    }
+                });
             }
 
             function sendMessage() {
                 if (input.value !== "") {
-                    zeroFrame.cmd("peerBroadcast", [input.value, false]);
-                    input.value = "";
+                    input.readOnly = true;
+                    zeroFrame.cmd("peerBroadcast", [input.value, false], (res) => {
+                        if (res.sent) {
+                            if (document.getElementById("notifyWhenSend").checked) {
+                                zeroFrame.cmd('wrapperNotification', ['done', 'Sent message!', 3000]);
+                            }
+                            input.value = "";
+                        } else {
+                            zeroFrame.cmd("wrapperNotification", ["error", "Message not sent!"]);
+                        }
+                        input.readOnly = false;
+                    });
                 }
             }
             
@@ -95,6 +130,10 @@
                         var chat = document.getElementById("chat");
                         chat.scrollTop = chat.scrollHeight;
 
+                        if (document.getElementById("notifyWhenReceive").checked) {
+                            zeroFrame.cmd('wrapperNotification', ['info', 'Message received!', 3000]);
+                        }
+                    
                         /* broadcast message to other peers */
                         zeroFrame.cmd("peerValid", [message.params.hash]);
                     }
