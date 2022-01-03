@@ -196,7 +196,7 @@
                     } else {
                         document.getElementById("history").innerHTML +=
                                 '<li><span class="nick">' + htmlEncode(nick) +
-                                '#' + htmlEncode(message.params.signed_by.substring(0, 4)) + '</span>:' +
+                                '#' + htmlEncode(message.params.signed_by.substring(1, 5)) + '</span>:' +
                                 '<span class="msg">' + htmlEncode(text) + '</span></li>' +
                                 "\n";
 
