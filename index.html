@@ -54,6 +54,7 @@
         <button onclick="login()">Login</button>
         <input type="text" id="msgInput" value="" autocomplete="off">
         <button onclick="requireLogin(sendMessage)" id="sendButton">Send</button>
+        <button onclick="requireLogin(sendMsgPong)" id="sendPong">Send pong</button>
         <button onclick="clearMessages()">Clear</button>
         <br><br>
         
@@ -63,6 +64,15 @@
         
         <input type="checkbox" id="notifyWhenReceive">
         <label for="notifyWhenReceive">Notification when message is received</label>
+        <br>
+        
+
+        <input type="checkbox" id="autoping" checked>
+        <label for="autoping">Automatically reply to a ping message with a pong</label>
+        <br>
+        
+        <input type="checkbox" id="showping" checked>
+        <label for="showping">Show ping/pong messages (also own)</label>
         <br><br>
         
         <p><button onclick="updateNumPeers()">Update</button> Peers: <span id="numPeers"></span></p>
@@ -76,7 +86,12 @@
             installed the PeerMessage plugin.
             You can download it from <a href="/1CeEXxqemr5CcVQAAmrW13QYwZV4kAkQz6" target="_blank">here</a>.
         </div>
+        <br>
         
+        <div class="note">
+            Tip: To see how many there are in the room, you can simply write ping.
+            Anyone who has a tick on "Automatically reply to a ping message with a pong" will reply with a pong.
+        </div>
         
         <script src="js/ZeroFrame.js"></script>
         <script>
@@ -124,11 +139,13 @@
                 });
             }
 
-            function requireLogin(func) {
+            function requireLogin(func, msg = true) {
                 zeroFrame.cmd("siteInfo", [], (res) => {
                     if (res.cert_user_id === null) {
-                        zeroFrame.cmd("wrapperNotification",
-                            ["error", "In order to use this function, an identity must be selected."]);
+                        if (msg) {
+                            zeroFrame.cmd("wrapperNotification",
+                                ["error", "In order to use this function, an identity must be selected."]);
+                        }
                     } else {
                         func();
                     }
@@ -176,6 +193,30 @@
                 document.getElementById("history").innerHTML = "";
             }
             
+            function sendMsgPong() {
+                sendPong(true);
+            }
+            
+            function sendPong(msg = false) {
+                zeroFrame.cmd("peerBroadcast", ["pong", false], (res) => {
+                    if (msg) {
+                        if (res.sent) {
+                            if (document.getElementById("notifyWhenSend").checked) {
+                                zeroFrame.cmd('wrapperNotification',
+                                    ['done', 'Sent pong!', popupIntervall]);
+                            }
+                        } else {
+                            var errorMsg = "Pong not sent";
+                            if (res.error) {
+                                errorMsg += " - " + res.error;
+                            }
+                            errorMsg += "!";
+                            zeroFrame.cmd("wrapperNotification", ["error", errorMsg]);
+                        }
+                    }
+                });
+            }
+            
             input.addEventListener("keyup", function(event) {
                 /* send when press enter */
                 if (event.keyCode === 13) {
@@ -190,27 +231,34 @@
                     var text = message.params.message;
                     var nick = message.params.cert;
                     
-                    if (text === "") {
+                    if (text === "" || nick === "") {
                         /* ban message when empty */
                         zeroFrame.cmd("peerInvalid", [message.params.hash]);
                     } else {
-                        document.getElementById("history").innerHTML +=
-                                '<li><span class="nick">' + htmlEncode(nick) +
-                                '#' + htmlEncode(message.params.signed_by.substring(1, 5)) + '</span>: ' +
-                                '<span class="msg">' + htmlEncode(text) + '</span></li>' +
-                                "\n";
+                        // if ( ! ((text === "ping" || text === "pong") && ! document.getElementById("showping").checked) ) {
+                        if ( (text !== "ping") && (text !== "pong") || document.getElementById("showping").checked) {
+                            document.getElementById("history").innerHTML +=
+                                    '<li><span class="nick">' + htmlEncode(nick) +
+                                    '#' + htmlEncode(message.params.signed_by.substring(1, 5)) + '</span>: ' +
+                                    '<span class="msg">' + htmlEncode(text) + '</span></li>' +
+                                    "\n";
 
-                        /* autoscroll */
-                        var chat = document.getElementById("chat");
-                        chat.scrollTop = chat.scrollHeight;
+                            /* autoscroll */
+                            var chat = document.getElementById("chat");
+                            chat.scrollTop = chat.scrollHeight;
 
-                        if (document.getElementById("notifyWhenReceive").checked) {
-                            zeroFrame.cmd('wrapperNotification',
-                                ['done', 'Message received!', popupIntervall]);
+                            if (document.getElementById("notifyWhenReceive").checked) {
+                                zeroFrame.cmd('wrapperNotification',
+                                    ['done', 'Message received!', popupIntervall]);
+                            }
                         }
                     
                         /* broadcast message to other peers */
                         zeroFrame.cmd("peerValid", [message.params.hash]);
+                        
+                        if (text === "ping" && document.getElementById("autoping").checked) {
+                            requireLogin(sendPong, false);
+                        }
                     }
                 }
             };
