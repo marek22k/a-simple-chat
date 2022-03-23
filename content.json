@@ -6,26 +6,26 @@
  "description": "A simple chat",
  "files": {
   "index.html": {
-   "sha512": "bba4acbd742a0f73aaf95c24819f970fb5e23158456ad3200429ba3f91c11165",
-   "size": 11022
+   "sha512": "c2d47b10005e2164f4a464c96c6b82f1eedbe9b2619a74d163b08bef4ec83561",
+   "size": 11039
   },
   "js/ZeroFrame.js": {
    "sha512": "76a24d167e8a4c45f7d1b315efe31e4b4ccb19efef011c080994c94045ff4c93",
    "size": 5088
   },
   "p2p.json": {
-   "sha512": "33b1901e9c5d630bf854697fd559030dc62f6d0e5e17a2d702c9aba2ca32b556",
-   "size": 458
+   "sha512": "f0499cc59610bd5139cd02e9f4760a91fbab99c8c7e77f954eb4293f0f5eb155",
+   "size": 526
   }
  },
  "ignore": "",
  "inner_path": "content.json",
- "modified": 1641337813,
+ "modified": 1648071180,
  "postmessage_nonce_security": true,
  "signers_sign": "G9JBrJv0VTftRt7xwEIXxCeTFX+bAnh1doaC8bC/Cv4nQZa9bvvEcEj4RCvkKL8bchdkgJjifb569KDtCzoJiU4=",
- "signs": {"1Keke3V7Fn8bPt82QyhNHkv5gx5NnK9Umu": "G3sd4V4L/RZQKqctRGUtdkW9M/T9NFapo7WBRfkmvDzmc2sIn1xV6nU58rq5AQ+eLIRxfm6zyiy4W1nPeuqWU7o="},
+ "signs": {"1Keke3V7Fn8bPt82QyhNHkv5gx5NnK9Umu": "G4RtIRU3cfdK5K/ridddRq7LXQiXaR4nNc7evJFQqS54F4hzp4TUAOMD0XcqjC8rEenRAQPzYr0lRibvexNJ28k="},
  "signs_required": 1,
  "title": "A simple chat",
  "viewport": "width=device-width, initial-scale=1.0",
- "zeronet_version": "0.7.5"
+ "zeronet_version": "0.7.8"
 }
