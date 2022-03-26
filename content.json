@@ -6,24 +6,24 @@
  "description": "A simple chat",
  "files": {
   "index.html": {
-   "sha512": "d87599e8406fa5b86b03bfba5ec762aa011896e7a530e4029c3db408fc3edafe",
-   "size": 11049
+   "sha512": "5f0afb58efb328f5930e2afb2d8ff28947fef81fa39b0379bf22292819bc48ab",
+   "size": 11067
   },
   "js/ZeroFrame.js": {
    "sha512": "76a24d167e8a4c45f7d1b315efe31e4b4ccb19efef011c080994c94045ff4c93",
    "size": 5088
   },
   "p2p.json": {
-   "sha512": "2453dbe9ab37cbf226e45f0b4a1e75d13e4559d96cf511f2b49c079c549862d0",
-   "size": 594
+   "sha512": "06bc61d5dd8fca4d22db07fc315b95347e869bccae800a566e0ceff58d39735a",
+   "size": 662
   }
  },
  "ignore": "",
  "inner_path": "content.json",
- "modified": 1648290511,
+ "modified": 1648291978,
  "postmessage_nonce_security": true,
  "signers_sign": "G9JBrJv0VTftRt7xwEIXxCeTFX+bAnh1doaC8bC/Cv4nQZa9bvvEcEj4RCvkKL8bchdkgJjifb569KDtCzoJiU4=",
- "signs": {"1Keke3V7Fn8bPt82QyhNHkv5gx5NnK9Umu": "G3JbGEFzSiddTvHq272WhnCT0jEjJ0bYQw2pHF4wXWYLSxeEjg8H/wpSEPWLqAfQD6zSNNrlEmQXsikORYiqd00="},
+ "signs": {"1Keke3V7Fn8bPt82QyhNHkv5gx5NnK9Umu": "G5Pa7o/YL3O1p+dhZCRtht5Fezx9VouMGfByIGj/QDW/atzy3aIl7HdDayGqiVuCUWRPIsTqbhwXhKwwZQCgreY="},
  "signs_required": 1,
  "title": "A simple chat",
  "viewport": "width=device-width, initial-scale=1.0",
